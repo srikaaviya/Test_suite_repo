@@ -99,11 +99,12 @@ jobs:
         with:
           path: reports/allure-results
           merge-multiple: true
+      - name: Install Allure
+        run: |
+          curl -sL https://github.com/allure-framework/allure2/releases/download/2.30.0/allure-2.30.0.tgz | tar -xz
+          echo "$PWD/allure-2.30.0/bin" >> $GITHUB_PATH
       - name: Generate Allure Report
-        uses: simple-elf/allure-report-action@v1.12
-        with:
-          allure_results: reports/allure-results
-          allure_report: reports/allure-report
+        run: allure generate reports/allure-results -o reports/allure-report --clean
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
