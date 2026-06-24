@@ -74,3 +74,45 @@ def test_deleted_booking_returns_404(api_client):
     api_client.delete_booking(booking_id)
     get_response = api_client.get_booking(booking_id)
     assert get_response.status_code == 404
+
+@pytest.mark.api
+def test_create_multiple_bookings_sequentially(api_client):
+    ids = []
+    for i in range(3):
+        data = create_test_booking(firstname=f"Batch{i}")
+        response = api_client.create_booking(data)
+        assert response.status_code == 200
+        ids.append(response.json()["bookingid"])
+    assert len(set(ids)) == 3
+
+
+@pytest.mark.api
+def test_update_booking_with_put_all_fields(api_client, created_booking):
+    booking_id, _ = created_booking
+    new_data = create_test_booking(
+        firstname="Entirely",
+        lastname="New",
+        totalprice=999,
+        depositpaid=False,
+    )
+    new_data["bookingdates"] = {"checkin": "2027-05-01", "checkout": "2027-05-10"}
+    new_data["additionalneeds"] = "Late checkout"
+    response = api_client.update_booking(booking_id, new_data)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["firstname"] == "Entirely"
+    assert body["totalprice"] == 999
+    assert body["additionalneeds"] == "Late checkout"
+
+
+@pytest.mark.api
+def test_partial_update_multiple_fields(api_client, created_booking):
+    booking_id, _ = created_booking
+    response = api_client.partial_update_booking(
+        booking_id, {"firstname": "Multi", "lastname": "Patch", "totalprice": 777}
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["firstname"] == "Multi"
+    assert body["lastname"] == "Patch"
+    assert body["totalprice"] == 777

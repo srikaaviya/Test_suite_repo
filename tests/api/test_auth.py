@@ -55,3 +55,22 @@ def test_auth_with_missing_password():
         timeout=REQUEST_TIMEOUT,
     )
     assert response.json().get("reason") == "Bad credentials"
+
+@pytest.mark.api
+def test_auth_with_wrong_username_correct_password():
+    response = requests.post(
+        f"{BASE_URL}/auth",
+        json={"username": "notadmin", "password": "password123"},
+        timeout=REQUEST_TIMEOUT,
+    )
+    assert response.json().get("reason") == "Bad credentials"
+
+
+@pytest.mark.api
+def test_auth_response_time_under_2_seconds():
+    response = requests.post(
+        f"{BASE_URL}/auth",
+        json={"username": "admin", "password": "password123"},
+        timeout=REQUEST_TIMEOUT,
+    )
+    assert response.elapsed.total_seconds() < 2
