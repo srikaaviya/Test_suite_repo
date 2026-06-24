@@ -1,0 +1,38 @@
+name: Nightly Load Tests
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # 6 AM UTC daily
+  workflow_dispatch:       # allow manual trigger
+
+jobs:
+  load-tests:
+    name: Load Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        profile:
+          - { name: "baseline", users: 10, rate: 1, duration: "60s" }
+          - { name: "stress", users: 100, rate: 10, duration: "120s" }
+          - { name: "spike", users: 100, rate: 100, duration: "60s" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -e ".[load]"
+      - name: Run ${{ matrix.profile.name }} load test
+        run: |
+          locust -f tests/load/locustfile.py \
+            --headless \
+            -u ${{ matrix.profile.users }} \
+            -r ${{ matrix.profile.rate }} \
+            -t ${{ matrix.profile.duration }} \
+            --html reports/load_${{ matrix.profile.name }}.html
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-${{ matrix.profile.name }}
+          path: reports/load_${{ matrix.profile.name }}.html

@@ -1,0 +1,34 @@
+[project]
+name = "restful-booker-test-suite"
+version = "1.0.0"
+description = "Production-grade test framework for the Restful Booker API"
+requires-python = ">=3.10"
+dependencies = [
+    "pytest>=8.0",
+    "requests>=2.31",
+    "pydantic>=2.0",
+    "allure-pytest>=2.13",
+]
+
+[project.optional-dependencies]
+contract = ["schemathesis>=3.25"]
+load = ["locust>=2.20"]
+e2e = ["pytest-playwright>=0.4", "playwright>=1.40"]
+all = [
+    "schemathesis>=3.25",
+    "locust>=2.20",
+    "pytest-playwright>=0.4",
+    "playwright>=1.40",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "api: API functional tests",
+    "smoke: Critical path smoke tests",
+    "contract: Schema contract tests",
+    "security: Security smoke tests",
+    "load: Load and performance tests",
+    "e2e: End-to-end UI tests",
+]
+addopts = "-v --tb=short"
