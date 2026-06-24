@@ -40,6 +40,8 @@ paths:
                 properties:
                   token:
                     type: string
+        "400":
+          description: Bad request
 
   /booking:
     get:
@@ -76,6 +78,8 @@ paths:
                   properties:
                     bookingid:
                       type: integer
+        "500":
+          description: Internal server error
 
     post:
       operationId: createBooking
@@ -98,6 +102,10 @@ paths:
                     type: integer
                   booking:
                     $ref: "#/components/schemas/Booking"
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
 
   /booking/{id}:
     get:
@@ -141,6 +149,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Booking"
+        "400":
+          description: Bad request
         "403":
           description: Forbidden
 
@@ -175,6 +185,8 @@ paths:
       responses:
         "200":
           description: Booking updated
+        "400":
+          description: Bad request
         "403":
           description: Forbidden
 
@@ -200,10 +212,8 @@ components:
       properties:
         checkin:
           type: string
-          format: date
         checkout:
           type: string
-          format: date
       required: [checkin, checkout]
 
     Booking:
@@ -219,6 +229,5 @@ components:
           type: boolean
         bookingdates:
           $ref: "#/components/schemas/BookingDates"
-        additionalneeds:
-          type: string
+        additionalneeds: {}
       required: [firstname, lastname, totalprice, depositpaid, bookingdates]

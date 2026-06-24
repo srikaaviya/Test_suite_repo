@@ -11,7 +11,7 @@ jobs:
     name: API Functional Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4 #Clone your repo onto that fresh machine.
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -20,7 +20,7 @@ jobs:
       - name: Run API tests
         run: pytest tests/api/ -v --alluredir=reports/allure-results/api
       - name: Upload results
-        if: always()
+        if: always() # means "do this even if the tests failed"
         uses: actions/upload-artifact@v4
         with:
           name: api-test-results
@@ -110,3 +110,18 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: reports/allure-report
+
+
+#You push code
+#     ↓
+#GitHub sees "on: push" in ci.yml
+#     ↓
+#Spins up 4 fresh Linux machines (free)
+#     ↓
+#Each runs its test layer in parallel
+#     ↓
+#All finish → 5th machine generates Allure report
+#     ↓
+#Green ✓ or Red ✗ on your commit
+#     ↓
+#Report published to GitHub Pages
