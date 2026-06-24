@@ -54,7 +54,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: pip install -e .
+        run: pip install -e ".[contract]"
       - name: Run contract tests
         run: pytest tests/contract/ -v --alluredir=reports/allure-results/contract
       - name: Upload results
